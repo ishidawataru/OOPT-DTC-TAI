@@ -1,6 +1,8 @@
 TAI (Transponder Abstraction Interface)
 =======================================
 
+[![Build Status](https://travis-ci.org/ishidawataru/OOPT-DTC-TAI.svg?branch=master)](https://travis-ci.org/ishidawataru/OOPT-DTC-TAI/builds)
+
 The Transponder Abstraction Interface, or TAI, defines the API to provide a
 vendor-independent way of controlling transponders from various vendors and 
 implementations in a uniform manner. It is based upon and quite common to the
