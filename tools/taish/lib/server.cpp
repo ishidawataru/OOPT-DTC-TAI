@@ -124,21 +124,33 @@ static tai_serialize_option_t convert_serialize_option(const taish::SerializeOpt
     auto res = taish::ListAttributeMetadataResponse();
     auto object_type = request->object_type();
     auto info = tai_metadata_all_object_type_infos[object_type];
-    if ( info == nullptr ) {
-        for ( uint32_t i = 0; i < tai_metadata_attr_sorted_by_id_name_count; i++ ) {
-            auto src = tai_metadata_attr_sorted_by_id_name[i];
-            auto dst = res.mutable_metadata();
-            convert_metadata(src, dst);
-            writer->Write(res);
+    auto oid = request->oid();
+    uint32_t count;
+    tai_attr_metadata_t const * const *list;
+
+    if ( oid != TAI_NULL_OBJECT_ID && m_api->meta_api != nullptr ) {
+        auto ret = m_api->meta_api->list_metadata(oid, &count, &list);
+        if ( ret < 0 ) {
+            add_status(context, ret);
+            return Status::OK;
         }
-        return Status::OK;
+    } else if ( info == nullptr ) {
+        count = tai_metadata_attr_sorted_by_id_name_count;
+        list = tai_metadata_attr_sorted_by_id_name;
+    } else {
+        count = info->attrmetadatalength;
+        list = info->attrmetadata;
     }
-    for ( uint32_t i = 0; i < info->attrmetadatalength; i++ ) {
-        auto src = info->attrmetadata[i];
+
+    std::cout << std::hex << oid << ", " << list << ", " << info->attrmetadata << ", " << info->attrmetadatalength << std::endl;
+
+    for ( uint32_t i = 0; i < count; i++ ) {
+        auto src = list[i];
         auto dst = res.mutable_metadata();
         convert_metadata(src, dst);
         writer->Write(res);
     }
+
     return Status::OK;
 }
 

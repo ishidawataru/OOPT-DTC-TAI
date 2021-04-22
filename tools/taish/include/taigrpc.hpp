@@ -50,6 +50,7 @@ struct tai_api_method_table_t
     tai_module_api_t* module_api;
     tai_host_interface_api_t* hostif_api;
     tai_network_interface_api_t* netif_api;
+    tai_meta_api_t* meta_api;
     tai_api_list_module_fn list_module;
     tai_object_update_fn object_update;
 };

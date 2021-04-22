@@ -6,6 +6,7 @@
 tai_module_api_t *module_api;
 tai_network_interface_api_t *network_interface_api;
 tai_host_interface_api_t *host_interface_api;
+tai_meta_api_t *meta_api;
 
 #define TAI_MAX_HOST_IFS    8
 #define TAI_MAX_NET_IFS     8
@@ -170,8 +171,29 @@ int main() {
 
     printf("host_interface_api: %p\n", host_interface_api);
 
+    status = tai_api_query(TAI_API_META, (void**)&meta_api);
+    if ( status != TAI_STATUS_SUCCESS ) {
+        printf("no api for TAI_API_META\n");
+        return 1;
+    }
+
+    printf("meta_api: %p\n", meta_api);
+
     sleep(1);
     create_modules();
+
+    printf("module oid: 0x%lx\n", g_module_ids[0]);
+
+    if ( meta_api != NULL ) {
+        uint32_t count;
+        const tai_attr_metadata_t * const *list;
+        status = meta_api->list_metadata(g_module_ids[0], &count, &list);
+        printf("status: %d, count: %u, list: %p\n", status, count, list);
+
+        status = meta_api->list_metadata(g_netif_ids[0][0], &count, &list);
+        printf("status: %d, count: %u, list: %p\n", status, count, list);
+ 
+    }
 
     status = tai_api_uninitialize();
     if ( status != TAI_STATUS_SUCCESS ) {

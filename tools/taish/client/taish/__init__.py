@@ -57,7 +57,7 @@ class TAIObject(object):
         return self.obj.oid
 
     def list_attribute_metadata(self):
-        return self.client.list_attribute_metadata(self.object_type)
+        return self.client.list_attribute_metadata(self.object_type, self.oid)
 
     def get_attribute_metadata(self, attr):
         return self.client.get_attribute_metadata(self.object_type, attr)
@@ -126,9 +126,10 @@ class AsyncClient(object):
         future = await self.stub.ListModule(req)
         return { res.module.location: res.module for res in future }
 
-    async def list_attribute_metadata(self, object_type):
+    async def list_attribute_metadata(self, object_type, oid):
         req = taish_pb2.ListAttributeMetadataRequest()
         req.object_type = object_type
+        req.oid = oid
         return [res.metadata for res in await self.stub.ListAttributeMetadata(req)]
 
     async def get_attribute_metadata(self, object_type, attr):

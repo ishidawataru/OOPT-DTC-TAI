@@ -53,6 +53,7 @@ message ListModuleResponse {
 
 message ListAttributeMetadataRequest {
     TAIObjectType object_type = 1;
+    uint64 oid = 2;
 }
 
 message ListAttributeMetadataResponse {

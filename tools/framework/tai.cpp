@@ -343,6 +343,29 @@ static tai_module_api_t module_api = {
     .get_module_attributes = get_module_attributes,
 };
 
+static tai_status_t list_metadata(tai_object_id_t oid, uint32_t *count, const tai_attr_metadata_t * const **list) {
+    auto t = tai_object_type_query(oid);
+    auto info = tai_metadata_all_object_type_infos[t];
+    if ( info == nullptr ) {
+        *count = tai_metadata_attr_sorted_by_id_name_count;
+        *list = tai_metadata_attr_sorted_by_id_name;
+        return TAI_STATUS_SUCCESS;
+    }
+    *count = info->attrmetadatalength;
+    *list = info->attrmetadata;
+    std::cout << std::hex << "oid: 0x" << oid << ", list: " << *list << ", count: " << std::dec << *count << std::endl;
+    return TAI_STATUS_SUCCESS;
+}
+
+static const tai_attr_metadata_t* get_metadata(tai_object_id_t oid, tai_attr_id_t attr_id) {
+    return TAI_STATUS_SUCCESS;
+}
+
+static tai_meta_api_t meta_api = {
+    .list_metadata = list_metadata,
+    .get_metadata  = get_metadata
+};
+
 tai_status_t tai_api_initialize(uint64_t flags, const tai_service_method_table_t* services) {
     if ( g_platform != nullptr ) {
         return TAI_STATUS_FAILURE;
@@ -383,6 +406,9 @@ tai_status_t tai_api_query(tai_api_t tai_api_id, void** api_method_table) {
         break;
     case TAI_API_HOSTIF:
         *api_method_table = &host_interface_api;
+        break;
+    case TAI_API_META:
+        *api_method_table = &meta_api;
         break;
     default:
         return TAI_STATUS_NOT_SUPPORTED;
